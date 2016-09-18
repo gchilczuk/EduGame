@@ -23,17 +23,17 @@ class GUI(tk.Frame):
         :return: created label
         """
         # self.images[name] = not implemented yet
-        self.textvariables[name] = tk.StringVar(value=kwargs['text'] if 'text' in kwargs else '')
+        self.textvariables[name] = tk.StringVar(value=kwargs.get('text', ''))
         self.labels[name] = tk.Label(self,
                                      textvariable=self.textvariables[name],
-                                     bg=kwargs['bg'] if 'bg' is in kwargs else None,
-                                     fg=kwargs['bg'] if 'fg' is in kwargs else None,
+                                     bg=kwargs.get('bg'),
+                                     fg=kwargs.get('fg'),
 
                                      # image=self.images[name],
-                                     # compound=kwargs['compound'] if 'compound' in kwargs else None,
+                                     # compound=kwargs.get('compound'),
                                      )
-        self.labels.grid(row=kwargs['row'],
-                         )
+        self.labels[name].grid(row=kwargs.get('row'),
+                               column=kwargs.get('column'))
 
         return self.labels[name]
 
