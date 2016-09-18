@@ -4,9 +4,10 @@ from tkinter import ttk
 class GUI(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
+        self.names = {}
         self.textvariables = dict()
         self.variables = dict()
-        # self.images = dict() not implemented yet
+        self.images = dict()
         self.labels = dict()
         self.checkboxes = dict()
         self.radiobuttons = dict()
@@ -22,19 +23,18 @@ class GUI(tk.Frame):
         :param kwargs: row, column, rowspan, columnspan, text, image, etc
         :return: created label
         """
-        # self.images[name] = not implemented yet
+        self.images[name] = kwargs.get('image')  # only ImageTk.PhotoImage() → not implemented yet
         self.textvariables[name] = tk.StringVar(value=kwargs.get('text', ''))
         self.labels[name] = tk.Label(self,
                                      textvariable=self.textvariables[name],
-                                     bg=kwargs.get('bg'),
-                                     fg=kwargs.get('fg'),
-
-                                     # image=self.images[name],
-                                     # compound=kwargs.get('compound'),
+                                     **{k : v for k, v in kwargs.items() if k in {'bg', 'fg', 'wraplength',
+                                                                                   'compound', 'justify'}},
+                                     # image=self.images['name']
                                      )
-        self.labels[name].grid(row=kwargs.get('row'),
-                               column=kwargs.get('column'))
-
+        self.labels[name].grid(**{k : v for k, v in kwargs.items() if k in {'column', 'columnspan',
+                                                                           'row', 'rowspan',
+                                                                           'padx', 'pady', 'ipadx', 'ipady',
+                                                                           'sticky', 'in_'}})
         return self.labels[name]
 
 
@@ -109,6 +109,11 @@ class GUI(tk.Frame):
     def kill_button(self, name):
         pass
 
+    def is_name_free(self, name):
+        if name in self.names: raise NameAlreadUsedException("This name is already used in this Frame, you need to use another one.")
 
 class InvalidPositionException(Exception):
+    pass
+
+class NameAlreadUsedException(Exception):
     pass
