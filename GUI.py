@@ -2,10 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 
 class GUI(tk.Frame):
-    def __init__(self, master=None, ):
+    def __init__(self, master=None):
         super().__init__(master)
         self.textvariables = dict()
         self.variables = dict()
+        # self.images = dict() not implemented yet
         self.labels = dict()
         self.checkboxes = dict()
         self.radiobuttons = dict()
@@ -21,7 +22,19 @@ class GUI(tk.Frame):
         :param kwargs: row, column, rowspan, columnspan, text, image, etc
         :return: created label
         """
-        self.labels[name] = tk.Label(self)
+        # self.images[name] = not implemented yet
+        self.textvariables[name] = tk.StringVar(value=kwargs['text'] if 'text' in kwargs else '')
+        self.labels[name] = tk.Label(self,
+                                     textvariable=self.textvariables[name],
+                                     bg=kwargs['bg'] if 'bg' is in kwargs else None,
+                                     fg=kwargs['bg'] if 'fg' is in kwargs else None,
+
+                                     # image=self.images[name],
+                                     # compound=kwargs['compound'] if 'compound' in kwargs else None,
+                                     )
+        self.labels.grid(row=kwargs['row'],
+                         )
+
         return self.labels[name]
 
 
@@ -55,9 +68,10 @@ class GUI(tk.Frame):
         :param left_up:
         :param right_down:
         :param orientation: v for verticle, h for horizontal
-        :param orientation:
         :return:
         """
+
+        # ?
         a = len(answers) + 1
         h = right_down[1] - left_up[1]
         l = right_down[0] - left_up[0]
@@ -66,7 +80,7 @@ class GUI(tk.Frame):
             if a > h or l < 2:
                 raise InvalidPositionException("More objects than reserved space")
 
-            rety.append(self.add_radiobutton(name, text=question, row=left_up[0], column=))
+            rety.append(self.add_radiobutton(name, text=question, row=left_up[0], column=0))
 
         elif orientation == 'v':
             if a > l or h < 1:
