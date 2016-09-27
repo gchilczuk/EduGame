@@ -1,16 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class GUI(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.names = {}
-        self.textvariables = dict()
+    def __init__(self, master=None, **kw):
+        super().__init__(master, **kw)
+        self.items = dict()
         self.variables = dict()
         self.images = dict()
-        self.labels = dict()
-        self.checkboxes = dict()
-        self.radiobuttons = dict()
         self.last_used_row = 0
         self.last_used_column = 0
         self.max_column = 0
@@ -19,45 +16,86 @@ class GUI(tk.Frame):
     def add_label(self, name, **kwargs):
         """
         Create single label
-        :param name: string, name of item
+        :param name: string, name of label
         :param kwargs: row, column, rowspan, columnspan, text, image, etc
         :return: created label
         """
+        self.is_name_free(name)
         self.images[name] = kwargs.get('image')  # only ImageTk.PhotoImage() → not implemented yet
-        self.textvariables[name] = tk.StringVar(value=kwargs.get('text', ''))
-        self.labels[name] = tk.Label(self,
-                                     textvariable=self.textvariables[name],
-                                     **{k : v for k, v in kwargs.items() if k in {'bg', 'fg', 'wraplength',
-                                                                                   'compound', 'justify'}},
-                                     # image=self.images['name']
-                                     )
-        self.labels[name].grid(**{k : v for k, v in kwargs.items() if k in {'column', 'columnspan',
+        self.items[name] = tk.Label(self,
+                                    **{k: v for k, v in kwargs.items() if k in {'text','bg','fg',
+                                                                                 'wraplength','compound',
+                                                                                 'justify'}},
+                                    # image=self.images['name']
+                                    )
+        self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
                                                                            'row', 'rowspan',
                                                                            'padx', 'pady', 'ipadx', 'ipady',
                                                                            'sticky', 'in_'}})
-        return self.labels[name]
+        return self.items[name]
 
+    def add_button(self, name, **kwargs):
+        """
+        :param name: string, name of button
+        :param kwargs: row, column, rowspan, columnspan, text, image, etc
+        :return: created button
+        """
+        self.is_name_free(name)
+        self.images[name] = kwargs.get('image')  # only ImageTk.PhotoImage() → not implemented yet
+        self.items[name] = tk.Button(self,
+                                     **{k: v for k, v in kwargs.items() if k in {'bg', 'fg', 'text',
+                                                                                 'compound', 'image',
+                                                                                 'command'}}
+                                     )
+        self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
+                                                                          'row', 'rowspan',
+                                                                          'padx', 'pady', 'ipadx', 'ipady',
+                                                                          'sticky', 'in_'}})
+        return self.items[name]
 
-    def add_checkbox(self, name, **kwargs):
+    def add_checkbox(self, name, start_value=0, **kwargs):
         """
         Create single checkbox
-        :param name: name of item
+        :param name: name of checkbox
+        :param start_value: initial value of checkbox (0 or 1)
         :param kwargs: row, column, rowspan, columnspan, text etc
         :return: created checkbox
         """
-        self.checkboxes[name] = tk.Checkbutton(self, **kwargs)
-        return self.checkboxes[name]
+        self.is_name_free(name)
+        self.variables[name] = tk.IntVar(value=start_value)
+        self.items[name] = tk.Checkbutton(self,
+                                          **{k: v for k, v in kwargs.items() if k in {'bg', 'fg', 'text',
+                                                                                      'compound', 'image',
+                                                                                      'command'}},
+                                          variable=self.variables[name]
+                                          )
+        self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
+                                                                          'row', 'rowspan',
+                                                                          'padx', 'pady', 'ipadx', 'ipady',
+                                                                          'sticky', 'in_'}})
+        return self.items[name]
 
-    def add_radiobutton(self, name,  **kwargs):
+    def add_radiobutton(self, name, **kwargs):
         """
         Create single radiobutton
         :param name: name of item
-        :param var: string name of varieble
+        :param kwargs: row, column, rowspan, columnspan, text, image, etc
         :return:
         """
-        if name not in self.variables: self.variables[name] = tk.IntVar()
-        self.radiobuttons[name] = tk.Radiobutton(self, variable=self.variables[name], **kwargs)
-        return self.radiobuttons[name]
+        # self.is_name_free(name)
+        if name not in self.variables:
+            self.variables[name] = tk.IntVar()
+        self.items[name] = tk.Radiobutton(self,
+                                          **{k: v for k, v in kwargs.items() if k in {'bg', 'fg', 'text',
+                                                                                      'compound', 'image',
+                                                                                      'command'}},
+                                          variable=self.variables[name]
+                                          )
+        self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
+                                                                          'row', 'rowspan',
+                                                                          'padx', 'pady', 'ipadx', 'ipady',
+                                                                          'sticky', 'in_'}})
+        return self.items[name]
 
     def add_single_selection_dialog(self, name, question, answers, left_up, right_down, orientation='h'):
         """
@@ -86,8 +124,6 @@ class GUI(tk.Frame):
             if a > l or h < 1:
                 raise InvalidPositionException("More objects than reserved space")
 
-
-
     def add_multiple_selection_dialog(self, name, question, answers, position=None, orientation='v'):
         pass
 
@@ -100,9 +136,6 @@ class GUI(tk.Frame):
     def kill_selection_dialog(self, dialog):
         pass
 
-    def add_button(self, name, function, position=None):
-        pass
-
     def rename_button(self, old_name, new_name):
         pass
 
@@ -110,10 +143,14 @@ class GUI(tk.Frame):
         pass
 
     def is_name_free(self, name):
-        if name in self.names: raise NameAlreadUsedException("This name is already used in this Frame, you need to use another one.")
+        if name in self.items.keys():
+            raise NameAlreadyUsedException(
+                "This name is already used in this Frame, you need to use another one.")
+
 
 class InvalidPositionException(Exception):
     pass
 
-class NameAlreadUsedException(Exception):
+
+class NameAlreadyUsedException(Exception):
     pass
