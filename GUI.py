@@ -2,16 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class GUI(tk.Frame):
+class GUIFrame(tk.Frame):
     def __init__(self, master=None, **kw):
         super().__init__(master, **kw)
         self.items = dict()
         self.variables = dict()
         self.images = dict()
-        self.last_used_row = 0
-        self.last_used_column = 0
-        self.max_column = 0
-        self.max_row = 0
+        self.grid()
 
     def add_label(self, name, **kwargs):
         """
@@ -21,17 +18,17 @@ class GUI(tk.Frame):
         :return: created label
         """
         self.is_name_free(name)
-        self.images[name] = kwargs.get('image')  # only ImageTk.PhotoImage() → not implemented yet
+        # self.images[name] = kwargs.get('image', None)  # only ImageTk.PhotoImage() → not implemented yet
         self.items[name] = tk.Label(self,
                                     **{k: v for k, v in kwargs.items() if k in {'text','bg','fg',
-                                                                                 'wraplength','compound',
-                                                                                 'justify'}},
-                                    # image=self.images['name']
+                                                                                'wraplength','compound',
+                                                                                'justify', 'image'}},
+                                    image=self.images['name']
                                     )
         self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
-                                                                           'row', 'rowspan',
-                                                                           'padx', 'pady', 'ipadx', 'ipady',
-                                                                           'sticky', 'in_'}})
+                                                                          'row', 'rowspan',
+                                                                          'padx', 'pady', 'ipadx', 'ipady',
+                                                                          'sticky', 'in_'}})
         return self.items[name]
 
     def add_button(self, name, **kwargs):
@@ -41,7 +38,7 @@ class GUI(tk.Frame):
         :return: created button
         """
         self.is_name_free(name)
-        self.images[name] = kwargs.get('image')  # only ImageTk.PhotoImage() → not implemented yet
+        # self.images[name] = kwargs.get('image')  # only ImageTk.PhotoImage() → not implemented yet
         self.items[name] = tk.Button(self,
                                      **{k: v for k, v in kwargs.items() if k in {'bg', 'fg', 'text',
                                                                                  'compound', 'image',
@@ -75,27 +72,106 @@ class GUI(tk.Frame):
                                                                           'sticky', 'in_'}})
         return self.items[name]
 
-    def add_radiobutton(self, name, **kwargs):
+    def add_radiobutton(self, name, val, **kwargs):
         """
         Create single radiobutton
+        'name' is name of dictionary where similar radiobuttons are remembered,
+        inside dictionary elements are numbered in orderd of creation.
         :param name: name of item
+        :param val: value of radiobutton
         :param kwargs: row, column, rowspan, columnspan, text, image, etc
-        :return:
+        :return: created radiobutton
         """
         # self.is_name_free(name)
         if name not in self.variables:
-            self.variables[name] = tk.IntVar()
-        self.items[name] = tk.Radiobutton(self,
-                                          **{k: v for k, v in kwargs.items() if k in {'bg', 'fg', 'text',
-                                                                                      'compound', 'image',
-                                                                                      'command'}},
-                                          variable=self.variables[name]
-                                          )
+            self.variables[name] = tk.IntVar() if type(val) is int else tk.StringVar()
+            self.variables[name].set(val)
+            self.items[name] = dict()
+        n_name = name+str(len(self.items[name]))
+        self.items[name][n_name] = tk.Radiobutton(self,
+                                                  **{k: v for k, v in kwargs.items() if k in {'bg', 'fg', 'text',
+                                                                                              'compound', 'image',
+                                                                                              'command'}},
+                                                  variable=self.variables[name],
+                                                  value=val
+                                                  )
+        self.items[name][n_name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
+                                                                                  'row', 'rowspan',
+                                                                                  'padx', 'pady', 'ipadx', 'ipady',
+                                                                                  'sticky', 'in_'}})
+        return self.items[name][n_name]
+
+    def add_progressbar(self,name,**kwargs):
+        """
+        Create progressbar
+        :param name: string, name of label
+        :param kwargs: orient, row, column, rowspan, columnspan etc
+        :return: created progressbar
+        """
+        self.is_name_free(name)
+        self.variables[name] = tk.IntVar(value=kwargs.get('value',0))
+        self.items[name] = ttk.Progressbar(self,
+                                           **{k: v for k, v in kwargs.items() if k in {'orient', 'length',
+                                                                                       'mode','maximum'}},
+                                           variable=self.variables[name]
+                                           )
         self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
                                                                           'row', 'rowspan',
                                                                           'padx', 'pady', 'ipadx', 'ipady',
                                                                           'sticky', 'in_'}})
         return self.items[name]
+
+    def destroy_item(self, name):
+        try:
+            self.items[name].destroy()
+            del self.items[name]
+        except:
+            print("Ups!")
+            return False
+        try:
+            del self.variables[name]
+        except:
+            pass
+        try:
+            del self.images[name]
+        except:
+            pass
+        return True
+
+    def destroy_self(self):
+        self.items.clear()
+        self.variables.clear()
+        self.images.clear()
+        self.destroy()
+
+    def configure_item(self, name, value=None, image=None, **kwargs):
+        if value is not None:
+            self.variables[name] = value
+        if image is not None:
+            self.images[name] = image
+        if len(kwargs) > 0:
+            self.items[name].configure(**kwargs)
+
+
+    def mark_answers(self, answer, colour):
+        pass
+
+    def get_answers(self, dialog):
+        pass
+
+    def kill_selection_dialog(self, dialog):
+        pass
+
+    def rename_button(self, old_name, new_name):
+        pass
+
+    def get_var(self, name):
+        return self.variables[name]
+
+    def is_name_free(self, name):
+        if name in self.items.keys():
+            raise NameAlreadyUsedException(
+                "This name is already used in this Frame, you need to use another one.")
 
     def add_single_selection_dialog(self, name, question, answers, left_up, right_down, orientation='h'):
         """
@@ -126,26 +202,6 @@ class GUI(tk.Frame):
 
     def add_multiple_selection_dialog(self, name, question, answers, position=None, orientation='v'):
         pass
-
-    def mark_answers(self, answer, colour):
-        pass
-
-    def get_answers(self, dialog):
-        pass
-
-    def kill_selection_dialog(self, dialog):
-        pass
-
-    def rename_button(self, old_name, new_name):
-        pass
-
-    def kill_button(self, name):
-        pass
-
-    def is_name_free(self, name):
-        if name in self.items.keys():
-            raise NameAlreadyUsedException(
-                "This name is already used in this Frame, you need to use another one.")
 
 
 class InvalidPositionException(Exception):
