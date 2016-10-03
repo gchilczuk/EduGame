@@ -1,6 +1,6 @@
 # EduGra
-Gra edukacyjna tworzona jako pomoc do nauki do egzaminów na studia, oparta na istenijącej grze.
+Gra edukacyjna tworzona jako pomoc do nauki do egzaminów na studia, oparta na grze poznanej na pierwszym roku studiów.
 
 # Autor
 Tworzone przez @gchilczuk
-Lipiec 2016
+Od Lipiec 2016

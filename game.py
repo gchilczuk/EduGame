@@ -64,6 +64,10 @@ class Game:
 
     def check_answer(self):
         pass
+        # get answers
+        # check answers
+        # set colors
+        #
 
 
 
