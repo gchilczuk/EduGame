@@ -82,7 +82,6 @@ class GUIFrame(tk.Frame):
         :param kwargs: row, column, rowspan, columnspan, text, image, etc
         :return: created radiobutton
         """
-        # self.is_name_free(name)
         if name not in self.variables:
             self.variables[name] = tk.IntVar() if type(val) is int else tk.StringVar()
             self.variables[name].set(val)
@@ -152,19 +151,6 @@ class GUIFrame(tk.Frame):
         if len(kwargs) > 0:
             self.items[name].configure(**kwargs)
 
-
-    def mark_answers(self, answer, colour):
-        pass
-
-    def get_answers(self, dialog):
-        pass
-
-    def kill_selection_dialog(self, dialog):
-        pass
-
-    def rename_button(self, old_name, new_name):
-        pass
-
     def get_var(self, name):
         return self.variables[name]
 
@@ -173,35 +159,52 @@ class GUIFrame(tk.Frame):
             raise NameAlreadyUsedException(
                 "This name is already used in this Frame, you need to use another one.")
 
-    def add_single_selection_dialog(self, name, question, answers, left_up, right_down, orientation='h'):
-        """
-        Create Label with question and radiobuttons with answers
-        :param name: string, name of dialog
-        :param question: string, question itself
-        :param answers: list of strings, variety of answers
-        :param left_up:
-        :param right_down:
-        :param orientation: v for verticle, h for horizontal
-        :return:
-        """
 
-        # ?
-        a = len(answers) + 1
-        h = right_down[1] - left_up[1]
-        l = right_down[0] - left_up[0]
-        rety = []
-        if orientation == 'h':
-            if a > h or l < 2:
-                raise InvalidPositionException("More objects than reserved space")
 
-            rety.append(self.add_radiobutton(name, text=question, row=left_up[0], column=0))
+    class Menu:
+        def __init__(self):
+            pass
 
-        elif orientation == 'v':
-            if a > l or h < 1:
-                raise InvalidPositionException("More objects than reserved space")
+        def add_single_selection_dialog(self, name, question, answers, left_up, right_down, orientation='h'):
+            """
+            Create Label with question and radiobuttons with answers
+            :param name: string, name of dialog
+            :param question: string, question itself
+            :param answers: list of strings, variety of answers
+            :param left_up:
+            :param right_down:
+            :param orientation: v for verticle, h for horizontal
+            :return:
+            """
+            a = len(answers) + 1
+            h = right_down[1] - left_up[1]
+            l = right_down[0] - left_up[0]
+            rety = []
+            if orientation == 'h':
+                if a > h or l < 2:
+                    raise InvalidPositionException("More objects than reserved space")
 
-    def add_multiple_selection_dialog(self, name, question, answers, position=None, orientation='v'):
-        pass
+                rety.append(self.add_radiobutton(name, text=question, row=left_up[0], column=0))
+
+            elif orientation == 'v':
+                if a > l or h < 1:
+                    raise InvalidPositionException("More objects than reserved space")
+
+        def add_multiple_selection_dialog(self, name, question, answers, position=None, orientation='v'):
+            pass
+
+    class Level:
+
+        def __init__(self):
+            pass
+
+        def get_answers(self, dialog):
+            pass
+
+        def mark_answers(self, answer, colour):
+            pass
+
+
 
 
 class InvalidPositionException(Exception):
