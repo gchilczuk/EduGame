@@ -143,16 +143,18 @@ class GUIFrame(tk.Frame):
         return True
 
     def destroy_self(self):
+        for item in self.items:
+            item.destroy()
         self.items.clear()
         self.variables.clear()
         self.images.clear()
         self.destroy()
 
-    def configure_item(self, name, value=None, image=None, **kwargs):
-        if value is not None:
-            self.variables[name] = value
-        if image is not None:
-            self.images[name] = image
+    def configure_item(self, name, new_value=None, new_image=None, **kwargs):
+        if new_value is not None:
+            self.variables[name] = new_value
+        if new_image is not None:
+            self.images[name] = new_image
         if len(kwargs) > 0:
             self.items[name].configure(**kwargs)
 
