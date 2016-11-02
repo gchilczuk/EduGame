@@ -3,19 +3,16 @@ from quest import Question
 from random import choice
 from copy import deepcopy
 
+
 class Game:
 
-    def __init__(self, UI):
-        """
-        :param UI: User Interface from GUI module
-        """
+    def __init__(self):
         self.curent_question = None
         self.base = None    # questions database
         self.to_ask = None  # questions to ask (deepcopy of 'base')
         self.passed = None  # used questions
         self.user_answers = []
         self.start = False
-        self.UI = UI
 
     def boot(self, repeat=1, penalty=1, base=None):
         """
@@ -36,8 +33,6 @@ class Game:
 
         for quest in self.to_ask:
             quest.set_repeats(repeat, penalty)
-
-        self.UI.boot()
 
         self.next_question()
         self.start = True
@@ -62,6 +57,15 @@ class Game:
         for a in args:
             self.user_answers.append(a)
 
+    def get_qestion_variants(self):
+        return self.curent_question.variants
+
+    def get_question_text(self):
+        return self.curent_question.question
+
+    def get_question_image(self):
+        return self.curent_question.image
+
     def check_answer(self):
         pass
         # get answers
@@ -70,9 +74,9 @@ class Game:
         #
 
 
-
 class DatabaseNotFoundException(Exception):
     pass
+
 
 class InvalidStepException(Exception):
     pass

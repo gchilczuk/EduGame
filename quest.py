@@ -2,7 +2,7 @@
 
 class Question:
 
-    def __init__(self, question, variants, answers, repeat=1, penalty=1):
+    def __init__(self, question, variants, answers, image=None):
         """
         :param question: string, question
         :param variants: list of strings, all variants of answers
@@ -17,8 +17,9 @@ class Question:
         self.question = question
         self.variants = variants
         self.answers = answers
-        self.repeats_left = repeat
-        self.penalty = penalty
+        self.image = image
+        self.repeats_left = 1
+        self.penalty = 1
 
     def check_answer(self, user_answers):
         """
