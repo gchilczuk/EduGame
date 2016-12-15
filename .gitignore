@@ -3,3 +3,4 @@ __py*
 *.7z
 baza
 test*
+.v1

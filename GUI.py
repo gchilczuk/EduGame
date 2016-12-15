@@ -18,12 +18,12 @@ class GUIFrame(tk.Frame):
         :return: created label
         """
         self.is_name_free(name)
-        self.images[name] = kwargs.get('image', None)  # only ImageTk.PhotoImage() → not implemented yet
+        # self.images[name] = kwargs.get('image', None)  # only ImageTk.PhotoImage() → not implemented yet
         self.items[name] = tk.Label(self,
-                                    **{k: v for k, v in kwargs.items() if k in {'text', 'bg', 'fg',
-                                                                                'wraplength', 'compound',
+                                    **{k: v for k, v in kwargs.items() if k in {'text','bg','fg',
+                                                                                'wraplength','compound',
                                                                                 'justify', 'image'}},
-                                    image=self.images[name]
+                                    image=self.images['name']
                                     )
         self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
                                                                           'row', 'rowspan',
@@ -82,11 +82,6 @@ class GUIFrame(tk.Frame):
         :param kwargs: row, column, rowspan, columnspan, text, image, etc
         :return: created radiobutton
         """
-        if name in self.items.keys():
-            if type(self.items[name]) != dict:
-                raise NameAlreadyUsedException(
-                    "This name is already used in this Frame, you need to use another one.")
-
         if name not in self.variables:
             self.variables[name] = tk.IntVar() if type(val) is int else tk.StringVar()
             self.variables[name].set(val)
@@ -105,7 +100,7 @@ class GUIFrame(tk.Frame):
                                                                                   'sticky', 'in_'}})
         return self.items[name][n_name]
 
-    def add_progressbar(self, name, **kwargs):
+    def add_progressbar(self,name,**kwargs):
         """
         Create progressbar
         :param name: string, name of label
@@ -113,10 +108,10 @@ class GUIFrame(tk.Frame):
         :return: created progressbar
         """
         self.is_name_free(name)
-        self.variables[name] = tk.IntVar(value=kwargs.get('value', 0))
+        self.variables[name] = tk.IntVar(value=kwargs.get('value',0))
         self.items[name] = ttk.Progressbar(self,
                                            **{k: v for k, v in kwargs.items() if k in {'orient', 'length',
-                                                                                       'mode', 'maximum'}},
+                                                                                       'mode','maximum'}},
                                            variable=self.variables[name]
                                            )
         self.items[name].grid(**{k: v for k, v in kwargs.items() if k in {'column', 'columnspan',
@@ -143,21 +138,16 @@ class GUIFrame(tk.Frame):
         return True
 
     def destroy_self(self):
-        for item in self.items:
-            try:
-                item.destroy()
-            except Exception:
-                pass
         self.items.clear()
         self.variables.clear()
         self.images.clear()
         self.destroy()
 
-    def configure_item(self, name, new_value=None, new_image=None, **kwargs):
-        if new_value is not None:
-            self.variables[name] = new_value
-        if new_image is not None:
-            self.images[name] = new_image
+    def configure_item(self, name, value=None, image=None, **kwargs):
+        if value is not None:
+            self.variables[name] = value
+        if image is not None:
+            self.images[name] = image
         if len(kwargs) > 0:
             self.items[name].configure(**kwargs)
 
@@ -168,6 +158,53 @@ class GUIFrame(tk.Frame):
         if name in self.items.keys():
             raise NameAlreadyUsedException(
                 "This name is already used in this Frame, you need to use another one.")
+
+
+
+    class Menu:
+        def __init__(self):
+            pass
+
+        def add_single_selection_dialog(self, name, question, answers, left_up, right_down, orientation='h'):
+            """
+            Create Label with question and radiobuttons with answers
+            :param name: string, name of dialog
+            :param question: string, question itself
+            :param answers: list of strings, variety of answers
+            :param left_up:
+            :param right_down:
+            :param orientation: v for verticle, h for horizontal
+            :return:
+            """
+            a = len(answers) + 1
+            h = right_down[1] - left_up[1]
+            l = right_down[0] - left_up[0]
+            rety = []
+            if orientation == 'h':
+                if a > h or l < 2:
+                    raise InvalidPositionException("More objects than reserved space")
+
+                rety.append(self.add_radiobutton(name, text=question, row=left_up[0], column=0))
+
+            elif orientation == 'v':
+                if a > l or h < 1:
+                    raise InvalidPositionException("More objects than reserved space")
+
+        def add_multiple_selection_dialog(self, name, question, answers, position=None, orientation='v'):
+            pass
+
+    class Level:
+
+        def __init__(self):
+            pass
+
+        def get_answers(self, dialog):
+            pass
+
+        def mark_answers(self, answer, colour):
+            pass
+
+
 
 
 class InvalidPositionException(Exception):

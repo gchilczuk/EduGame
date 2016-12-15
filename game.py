@@ -28,7 +28,7 @@ class Game:
             else:
                 self.base = base
 
-        self.to_ask = deepcopy(self.base)
+        self.to_ask = list(self.base)
         self.passed = []
 
         for quest in self.to_ask:
